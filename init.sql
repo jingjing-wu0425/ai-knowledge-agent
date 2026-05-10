@@ -26,7 +26,7 @@ create table nodes (
   chapter     text,
   page        text,
   category    text,
-  embedding   vector(1536)
+  embedding   vector(2048)
 );
 
 -- --------------------------------------------
@@ -55,3 +55,38 @@ create index idx_edges_target_id  on edges(target_id);
 -- 向量相似度索引（IVFFlat，适合中等数据量；数据量大时可换 HNSW）
 create index idx_nodes_embedding on nodes
   using ivfflat (embedding vector_cosine_ops) with (lists = 100);
+
+-- --------------------------------------------
+-- RPC 函数：match_nodes（向量相似度检索）
+-- --------------------------------------------
+create or replace function match_nodes(
+  query_embedding vector(2048),
+  match_threshold float,
+  match_count int
+)
+returns table (
+  id uuid,
+  doc_id uuid,
+  name text,
+  definition text,
+  node_type text,
+  chapter text,
+  page text,
+  category text,
+  similarity float
+)
+language plpgsql
+as $$
+begin
+  return query
+  select
+    n.id, n.doc_id, n.name, n.definition, n.node_type,
+    n.chapter, n.page, n.category,
+    1 - (n.embedding <=> query_embedding) as similarity
+  from nodes n
+  where n.embedding is not null
+    and 1 - (n.embedding <=> query_embedding) > match_threshold
+  order by n.embedding <=> query_embedding
+  limit match_count;
+end;
+$$;
