@@ -153,21 +153,19 @@ action 规则：
 
       // 将指向被删节点的边重定向到保留节点
       for (const n of affected.slice(1)) {
-        const { data: edges } = await supabase
+        const mergeLog = `合并：${affected.map((a) => a.name).join(" + ")} → ${d.result_node}`;
+
+        // 重定向：被删节点作为 source 的边
+        await supabase
           .from("edges")
-          .select("id")
-          .or(`source_id.eq.${n.id},target_id.eq.${n.id}`);
-        if (edges && edges.length > 0) {
-          type EdgeRow = { id: string };
-          // 将指向被删节点的边重定向到保留节点
-          await supabase
-            .from("edges")
-            .update({
-              source_id: keeper.id,
-              merge_log: `合并：${affected.map((a) => a.name).join(" + ")} → ${d.result_node}`,
-            })
-            .in("id", (edges as EdgeRow[]).map((e) => e.id));
-        }
+          .update({ source_id: keeper.id, merge_log: mergeLog })
+          .eq("source_id", n.id);
+
+        // 重定向：被删节点作为 target 的边
+        await supabase
+          .from("edges")
+          .update({ target_id: keeper.id, merge_log: mergeLog })
+          .eq("target_id", n.id);
       }
     } else if (d.action === "remove" && d.affected_nodes && d.affected_nodes.length >= 1) {
       const toRemove = allNodes.filter((n) => d.affected_nodes.includes(n.name));

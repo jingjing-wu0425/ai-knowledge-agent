@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 
 interface UploadResult {
+  doc_id: string;
   filename: string;
   totalChars: number;
   chunkCount: number;
@@ -43,7 +44,7 @@ export default function Uploader() {
     setExtracting(true);
 
     const chunksToExtract = result.chunks.slice(0, 3);
-    const docId = crypto.randomUUID();
+    const docId = result.doc_id;
 
     const responses = await Promise.all(
       chunksToExtract.map((chunk) =>
