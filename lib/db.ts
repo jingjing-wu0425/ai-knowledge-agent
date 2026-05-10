@@ -20,7 +20,7 @@ export async function saveGraphToSupabase(
   // 1. 为每个节点生成 embedding
   const openai = getOpenAI();
   const embedResponse = await openai.embeddings.create({
-    model: "text-embedding-3-small",
+    model: "embedding-3",
     input: graph.nodes.map((n) => n.definition || n.name),
   });
 

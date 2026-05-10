@@ -52,7 +52,7 @@ export interface ExtractionResult {
 export async function extractGraphFromChunk(chunk: string): Promise<ExtractionResult> {
   const openai = getOpenAI();
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "glm-4-flash",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: chunk },

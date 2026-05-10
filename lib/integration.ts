@@ -117,7 +117,7 @@ action 规则：
 
     const openai = getOpenAI();
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "glm-4-flash",
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0,
@@ -178,7 +178,7 @@ action 规则：
   for (const [id, newDef] of nodesToUpdate) {
     // 为更新后的定义重新生成 embedding
     const embedResp = await getOpenAI().embeddings.create({
-      model: "text-embedding-3-small",
+      model: "embedding-3",
       input: [newDef],
     });
     await supabase
