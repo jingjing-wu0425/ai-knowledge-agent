@@ -23,12 +23,15 @@ export async function saveGraphToSupabase(
 
   const embeddings = embedResponse.data.map((d) => d.embedding);
 
-  // 2. 写入 nodes 表
+  // 2. 写入 nodes 表（含 chapter / page / category）
   const nodeRows = graph.nodes.map((node, i) => ({
     doc_id: docId,
     name: node.name,
     definition: node.definition,
     node_type: node.node_type,
+    chapter: node.chapter || null,
+    page: node.page || null,
+    category: node.category || null,
     embedding: embeddings[i],
   }));
 
@@ -45,7 +48,7 @@ export async function saveGraphToSupabase(
     nameToId.set(node.name, node.id);
   }
 
-  // 4. 写入 edges 表
+  // 4. 写入 edges 表（含 description）
   const edgeRows = graph.edges
     .filter(
       (e) => nameToId.has(e.source_name) && nameToId.has(e.target_name)
@@ -54,6 +57,7 @@ export async function saveGraphToSupabase(
       source_id: nameToId.get(edge.source_name)!,
       target_id: nameToId.get(edge.target_name)!,
       relation_type: edge.relation_type,
+      description: edge.description || null,
     }));
 
   if (edgeRows.length > 0) {

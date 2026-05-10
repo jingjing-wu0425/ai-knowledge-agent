@@ -7,26 +7,43 @@ const SYSTEM_PROMPT = `你是一个严谨的学科图谱抽取专家。请从以
 你必须严格以 JSON 格式输出，结构如下：
 {
   "nodes": [
-    { "name": "概念名称", "definition": "概念定义", "node_type": "概念" }
+    {
+      "name": "概念名称",
+      "definition": "概念定义",
+      "node_type": "概念",
+      "chapter": "所在章节（如 第三章）",
+      "page": "页码（如 42）",
+      "category": "学科分类（如 数学/物理/计算机）"
+    }
   ],
   "edges": [
-    { "source_name": "源概念名称", "target_name": "目标概念名称", "relation_type": "前置依赖/并列/包含/应用" }
+    {
+      "source_name": "源概念名称",
+      "target_name": "目标概念名称",
+      "relation_type": "前置依赖/并列/包含/应用",
+      "description": "关系的具体描述"
+    }
   ]
 }
 
 relation_type 只能取以下四种之一：前置依赖、并列、包含、应用。
+chapter、page、category 请尽量从文本中推断，无法确定时填空字符串。
 不要输出任何 JSON 之外的内容。`;
 
 export interface ExtractedNode {
   name: string;
   definition: string;
   node_type: string;
+  chapter: string;
+  page: string;
+  category: string;
 }
 
 export interface ExtractedEdge {
   source_name: string;
   target_name: string;
   relation_type: string;
+  description: string;
 }
 
 export interface ExtractionResult {

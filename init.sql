@@ -23,6 +23,9 @@ create table nodes (
   name        text    not null,
   definition  text,
   node_type   text,
+  chapter     text,
+  page        text,
+  category    text,
   embedding   vector(1536)
 );
 
@@ -36,6 +39,7 @@ create table edges (
   relation_type text not null check (
     relation_type in ('前置依赖', '并列', '包含', '应用')
   ),
+  description   text,
   merge_log     text
 );
 
@@ -44,6 +48,7 @@ create table edges (
 -- --------------------------------------------
 create index idx_nodes_doc_id     on nodes(doc_id);
 create index idx_nodes_node_type  on nodes(node_type);
+create index idx_nodes_category   on nodes(category);
 create index idx_edges_source_id  on edges(source_id);
 create index idx_edges_target_id  on edges(target_id);
 
