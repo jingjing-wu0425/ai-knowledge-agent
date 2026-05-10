@@ -15,7 +15,11 @@ interface ExtractResult {
   saved: { nodeCount: number; edgeCount: number };
 }
 
-export default function Uploader() {
+interface UploaderProps {
+  onDone?: () => void;
+}
+
+export default function Uploader({ onDone }: UploaderProps) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [extracting, setExtracting] = useState(false);
@@ -59,6 +63,7 @@ export default function Uploader() {
     console.log("图谱抽取结果:", responses);
     setExtractResults(responses);
     setExtracting(false);
+    onDone?.();
   }
 
   function onDrop(e: React.DragEvent) {
@@ -74,7 +79,7 @@ export default function Uploader() {
   }
 
   return (
-    <div className="w-full max-w-xl space-y-4">
+    <div className="w-full space-y-4">
       {/* 拖拽区域 */}
       <div
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
