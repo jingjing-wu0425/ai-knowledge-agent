@@ -1,7 +1,5 @@
-import OpenAI from "openai";
+import { getOpenAI } from "./openai";
 import { getSupabase } from "./supabase";
-
-const openai = new OpenAI();
 
 // ---------- 类型 ----------
 
@@ -117,6 +115,7 @@ action 规则：
 - keep：两个节点虽有相似性但表述不同侧面，应都保留
 - remove：某个节点是另一个的子集或冗余，应删除`;
 
+    const openai = getOpenAI();
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
@@ -178,7 +177,7 @@ action 规则：
   // 批量更新合并后的节点定义
   for (const [id, newDef] of nodesToUpdate) {
     // 为更新后的定义重新生成 embedding
-    const embedResp = await openai.embeddings.create({
+    const embedResp = await getOpenAI().embeddings.create({
       model: "text-embedding-3-small",
       input: [newDef],
     });

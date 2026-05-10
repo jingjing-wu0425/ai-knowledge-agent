@@ -1,8 +1,6 @@
-import OpenAI from "openai";
+import { getOpenAI } from "./openai";
 import { getSupabase } from "./supabase";
 import type { ExtractionResult } from "./extractor";
-
-const openai = new OpenAI();
 
 interface SavedNode {
   id: string;
@@ -20,6 +18,7 @@ export async function saveGraphToSupabase(
   }
 
   // 1. 为每个节点生成 embedding
+  const openai = getOpenAI();
   const embedResponse = await openai.embeddings.create({
     model: "text-embedding-3-small",
     input: graph.nodes.map((n) => n.definition || n.name),

@@ -1,6 +1,4 @@
-import OpenAI from "openai";
-
-const openai = new OpenAI();
+import { getOpenAI } from "./openai";
 
 const SYSTEM_PROMPT = `你是一个严谨的学科图谱抽取专家。请从以下文本中提取独立的专业概念作为节点，并建立连线。忽略无关紧要的过渡词汇。
 
@@ -52,6 +50,7 @@ export interface ExtractionResult {
 }
 
 export async function extractGraphFromChunk(chunk: string): Promise<ExtractionResult> {
+  const openai = getOpenAI();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
