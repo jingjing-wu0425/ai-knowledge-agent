@@ -63,5 +63,10 @@ export async function extractGraphFromChunk(chunk: string): Promise<ExtractionRe
   });
 
   const content = response.choices[0].message.content ?? "{}";
-  return JSON.parse(content) as ExtractionResult;
+  try {
+    return JSON.parse(content) as ExtractionResult;
+  } catch (err) {
+    console.error("LLM 返回非法 JSON:", err);
+    return { nodes: [], edges: [] };
+  }
 }

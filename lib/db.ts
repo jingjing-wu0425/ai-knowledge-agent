@@ -15,6 +15,10 @@ export async function saveGraphToSupabase(
 ) {
   const supabase = getSupabase();
 
+  if (!graph.nodes || graph.nodes.length === 0) {
+    return { nodeCount: 0, edgeCount: 0, nodes: [] };
+  }
+
   // 1. 为每个节点生成 embedding
   const embedResponse = await openai.embeddings.create({
     model: "text-embedding-3-small",
@@ -45,7 +49,9 @@ export async function saveGraphToSupabase(
   // 3. 建立 name → UUID 映射
   const nameToId = new Map<string, string>();
   for (const node of insertedNodes as SavedNode[]) {
-    nameToId.set(node.name, node.id);
+    if (!nameToId.has(node.name)) {
+      nameToId.set(node.name, node.id);
+    }
   }
 
   // 4. 写入 edges 表（含 description）
